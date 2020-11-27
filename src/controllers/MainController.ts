@@ -8,10 +8,10 @@ export class MainController extends BaseController {
 
         const article = this.createElement("div", "This is a long text, and you shall not doubt me!")
 
-        const button = this.createElement("button", "Login")
+        const button = this.createElement("button", "Login", () => {
+            this.router.switchToLoginView()
+        })
         
-        this.container.append(title, article, button)
-
         return this.container
     }
 }
