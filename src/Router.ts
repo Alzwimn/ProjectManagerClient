@@ -1,5 +1,7 @@
+import { DashBoardController } from "./controllers/DashBoardController";
 import { LoginController } from "./controllers/LoginController";
 import { MainController } from "./controllers/MainController";
+import { SessionToken } from "./Models/AuthenticationModels";
 
 
 export class Router {
@@ -13,6 +15,10 @@ export class Router {
             case "/login":
                     this.switchToLoginView()
                 break;
+
+            case "/board": 
+                    this.switchToDashBoardView(undefined)
+                break
             default:
                 if(this.mainElement){
                     const mainController: MainController = new MainController(this)
@@ -20,6 +26,15 @@ export class Router {
                 }
                 break;
         }
+    }
+
+    public switchToDashBoardView(sessionToken: SessionToken | undefined){
+        if(this.mainElement) {
+            this.mainElement.innerHTML = ""
+            const dashBoardController = new DashBoardController(this)            
+            if(sessionToken) dashBoardController.setSessionToken(sessionToken)
+            this.mainElement.append(dashBoardController.createView())
+        } 
     }
 
     public switchToLoginView() {
