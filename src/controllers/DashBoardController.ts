@@ -1,4 +1,5 @@
 import { AccessRight, SessionToken } from "../Models/AuthenticationModels";
+import { User } from "../Models/DataModels";
 import { DataService } from "../services/DataService";
 import { BaseController } from "./BaseController";
 
@@ -9,6 +10,9 @@ export class DashBoardController extends BaseController {
     private searchArea: HTMLInputElement | undefined
     private searchResultArea: HTMLDivElement | undefined
     private dataService: DataService = new DataService()
+
+    private selectedUser: User | undefined
+    private selectedLabel: HTMLLabelElement | undefined
 
     public setSessionToken(sessionToken: SessionToken) {
         this.sessionToken = sessionToken
@@ -50,14 +54,25 @@ export class DashBoardController extends BaseController {
                     this.sessionToken!.tokenId, this.searchArea!.value
                 )
                 for(const user of users) {
-                    this.searchResultArea!.append(
-                        this.createElement("label", JSON.stringify(user))
-                    )
+                    const label = this.createElement("label", JSON.stringify(user))
+                    label.onclick = () => {
+                        label.classList.toggle("seletedLabel")
+                        this.selectedUser = user
+                        this.selectedLabel = label
+                    }
+                    this.searchResultArea!.append(label)
                     this.searchResultArea!.append(
                         document.createElement("br")
                     ) 
                 }
                 break;
+            case AccessRight.DELETE: 
+                if(!this.selectedUser) break
+                await this.dataService.deleteUser(
+                    this.sessionToken!.tokenId, this.selectedUser
+                ) 
+                this.selectedLabel!.innerHTML = ""   
+                break
             default:
                 break;
         }
